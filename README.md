@@ -1,66 +1,66 @@
-# TaskMate - Görev Takip Uygulaması
+# TaskMate - Task Tracking Application
 
-TaskMate, kullanıcıların görev oluşturup tamamlayabildikleri, sadece kendilerine ait verileri görebildikleri ve Supabase Authentication ile kimlik doğrulaması yapabildikleri bir Flutter To-Do uygulamasıdır.
+TaskMate is a Flutter To-Do application where users can create and complete tasks, see only their own data, and authenticate using Supabase Authentication.
 
-## Özellikler
+## Features
 
-- **Kullanıcı Yönetimi**: Kayıt, giriş ve şifre sıfırlama (Supabase Authentication)
-- **Görev Yönetimi**: Oluşturma, düzenleme, silme ve tamamlama
-- **Akıllı Filtreleme**: Tüm, tamamlanan, son tarihli, gecikmiş ve yaklaşan görevler
-- **Güvenlik**: Kullanıcıya özel görevler (row-level security)
-- **Bildirim Sistemi**: Özelleştirilebilir hatırlatmalar ve son tarih bildirimleri
-- **Görsel İyileştirmeler**: Modern arayüz ve görev kartları
-- **Çevrimdışı Destek**: Offline erişim ve senkronizasyon
-- **Türkçe Dil Desteği**: Tamamen Türkçe arayüz
+- **User Management**: Registration, login, and password reset (Supabase Authentication)
+- **Task Management**: Create, edit, delete, and complete tasks
+- **Smart Filtering**: All, completed, deadline-based, overdue, and upcoming tasks
+- **Security**: User-specific tasks (row-level security)
+- **Notification System**: Customizable reminders and deadline notifications
+- **Visual Improvements**: Modern interface and task cards
+- **Offline Support**: Offline access and synchronization
+- **Turkish Language Support**: Fully Turkish interface
 
-## Son Güncellemeler
+## Latest Updates
 
 ### v1.2.0 - 2024-08-05
 
-- **Bildirim Sistemi İyileştirmeleri**:
-  - Bildirim süresi kullanıcı tarafından ayarlanabilir hale getirildi
-  - SharedPreferences ile kalıcı depolama sorunları çözüldü
-  - Uygulama kapatılıp açıldığında kullanıcının belirlediği sürenin sıfırlanması engellendi
-  - Görev saati ve görev hatırlatma bildirimleri düzeltildi
+- **Notification System Improvements**:
+  - Notification time can now be customized by users
+  - Fixed persistent storage issues with SharedPreferences
+  - Prevented user-defined notification time from resetting when app is closed and reopened
+  - Fixed task time and task reminder notifications
 
-- **Görev Filtreleme İyileştirmeleri**:
-  - Tamamlanmış görevlerin gecikmiş olarak işaretlenmesi sorunu çözüldü
-  - Filtre değiştirme işlemleri optimize edildi
-  - Filtreleme sonrası verilerin doğru yüklenmesi sağlandı
+- **Task Filtering Improvements**:
+  - Fixed issue with completed tasks being marked as overdue
+  - Optimized filter switching operations
+  - Ensured correct loading of data after filtering
 
-- **Kullanıcı Deneyimi İyileştirmeleri**:
-  - Gereksiz test bildirimleri kaldırıldı
-  - Görev tamamlama işlemi hızlandırıldı
-  - Görev kartları tasarımı geliştirildi
+- **User Experience Improvements**:
+  - Removed unnecessary test notifications
+  - Accelerated task completion process
+  - Improved task card design
 
-## Kurulum
+## Installation
 
-### Gereksinimler
+### Requirements
 
-- Flutter 3.x veya üzeri
-- Supabase hesabı
-- Dart 3.x veya üzeri
+- Flutter 3.x or higher
+- Supabase account
+- Dart 3.x or higher
 
-### Adımlar
+### Steps
 
-1. Projeyi klonlayın
+1. Clone the project
 ```bash
 git clone https://github.com/your-username/taskmate.git
 cd taskmate
 ```
 
-2. Bağımlılıkları yükleyin
+2. Install dependencies
 ```bash
 flutter pub get
 ```
 
-3. Supabase Ayarları
+3. Supabase Setup
 
-- [Supabase](https://supabase.io/) üzerinde yeni bir proje oluşturun
-- SQL Editor'da aşağıdaki tabloyu oluşturun:
+- Create a new project on [Supabase](https://supabase.io/)
+- Create the following table in SQL Editor:
 
 ```sql
--- Görevler tablosu
+-- Tasks table
 CREATE TABLE tasks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title TEXT NOT NULL,
@@ -71,31 +71,31 @@ CREATE TABLE tasks (
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE
 );
 
--- Row Level Security (RLS) politikaları
+-- Row Level Security (RLS) policies
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 
--- Kullanıcı sadece kendi görevlerini görebilir
+-- Users can only view their own tasks
 CREATE POLICY "Users can view their own tasks" ON tasks
   FOR SELECT USING (auth.uid() = user_id);
 
--- Kullanıcı sadece kendi görevlerini ekleyebilir
+-- Users can only insert their own tasks
 CREATE POLICY "Users can insert their own tasks" ON tasks
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- Kullanıcı sadece kendi görevlerini düzenleyebilir
+-- Users can only update their own tasks
 CREATE POLICY "Users can update their own tasks" ON tasks
   FOR UPDATE USING (auth.uid() = user_id);
 
--- Kullanıcı sadece kendi görevlerini silebilir
+-- Users can only delete their own tasks
 CREATE POLICY "Users can delete their own tasks" ON tasks
   FOR DELETE USING (auth.uid() = user_id);
 ```
 
-4. API Anahtarlarının Güvenliği
+4. API Key Security
 
-**ÖNEMLİ**: GitHub'a yüklemeden önce, API anahtarlarınızı gizlemeniz gerekir.
+**IMPORTANT**: Before uploading to GitHub, you need to hide your API keys.
 
-`.env` dosyası oluşturabilir veya `lib/config/app_config.dart` dosyasını düzenleyebilirsiniz:
+You can create a `.env` file or edit the `lib/config/app_config.dart` file:
 
 ```dart
 class AppConfig {
@@ -104,63 +104,63 @@ class AppConfig {
 }
 ```
 
-Bu dosyayı `.gitignore` dosyanıza eklediğinizden emin olun:
+Make sure to add this file to your `.gitignore`:
 ```
-lib/config/app_config.dart  # Supabase API anahtarlarını içerir
+lib/config/app_config.dart  # Contains Supabase API keys
 ```
 
-5. Uygulamayı çalıştırın
+5. Run the application
 ```bash
 flutter run
 ```
 
-## Yapı
+## Structure
 
-- **lib/config**: Uygulama konfigürasyonu ve API anahtarları
-- **lib/models**: Veri modelleri (Task, User, vb.)
+- **lib/config**: Application configuration and API keys
+- **lib/models**: Data models (Task, User, etc.)
 - **lib/providers**: State management (TaskProvider, AuthProvider)
-- **lib/screens**: Uygulama ekranları (Home, Login, vb.)
-- **lib/services**: Servisler (TaskService, NotificationService, vb.)
-- **lib/widgets**: Yeniden kullanılabilir UI bileşenleri
-- **lib/utils**: Yardımcı fonksiyonlar ve araçlar
+- **lib/screens**: Application screens (Home, Login, etc.)
+- **lib/services**: Services (TaskService, NotificationService, etc.)
+- **lib/widgets**: Reusable UI components
+- **lib/utils**: Helper functions and tools
 
-## Teknolojiler
+## Technologies
 
 - **Flutter**: UI framework
-- **Supabase**: Backend as a Service (Auth ve Database)
+- **Supabase**: Backend as a Service (Auth and Database)
 - **Provider**: State Management
-- **Flutter Local Notifications**: Bildirimler
-- **Shared Preferences**: Yerel depolama
-- **Intl**: Tarih ve dil yerelleştirme
+- **Flutter Local Notifications**: Notifications
+- **Shared Preferences**: Local storage
+- **Intl**: Date and language localization
 
-## Güvenlik Önlemleri
+## Security Measures
 
-Bu projede aşağıdaki güvenlik önlemleri alınmıştır:
+The following security measures have been implemented in this project:
 
-1. **API Anahtarları Gizleme**: Supabase anahtarları .gitignore ile korunur
-2. **Row-Level Security**: Kullanıcılar sadece kendi verilerine erişebilir
-3. **Güvenli Depolama**: Hassas veriler güvenli bir şekilde saklanır
-4. **Input Validation**: Kullanıcı girişleri doğrulanır
-5. **Error Handling**: Hatalar güvenli bir şekilde yönetilir
+1. **API Key Protection**: Supabase keys are protected with .gitignore
+2. **Row-Level Security**: Users can only access their own data
+3. **Secure Storage**: Sensitive data is stored securely
+4. **Input Validation**: User inputs are validated
+5. **Error Handling**: Errors are handled securely
 
-## Sorun Giderme
+## Troubleshooting
 
-Eğer uygulamayı çalıştırırken sorunlarla karşılaşırsanız:
+If you encounter issues while running the application:
 
-1. **Bağımlılıkları güncelleyin**: `flutter pub upgrade`
-2. **Cache'i temizleyin**: `flutter clean`
-3. **Supabase anahtarlarının doğru olduğundan emin olun**
-4. **Platform izinlerini kontrol edin**: Bildirimler, depolama, vb.
-5. **Log çıktılarını inceleyin**: Hata mesajları genellikle sorunun kaynağını gösterir
+1. **Update dependencies**: `flutter pub upgrade`
+2. **Clean cache**: `flutter clean`
+3. **Verify Supabase keys are correct**
+4. **Check platform permissions**: Notifications, storage, etc.
+5. **Review log outputs**: Error messages often indicate the source of the problem
 
-## Katkıda Bulunma
+## Contributing
 
-1. Bu repo'yu fork edin
-2. Yeni bir feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Değişikliklerinizi commit edin (`git commit -m 'Add some amazing feature'`)
-4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
-5. Pull Request açın
+1. Fork this repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Lisans
+## License
 
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için `LICENSE` dosyasına bakın.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
